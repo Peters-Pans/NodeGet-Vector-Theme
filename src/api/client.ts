@@ -156,4 +156,19 @@ export class RpcClient {
     this.ws?.close()
     this.ws = null
   }
+
+  async latencyHistory(uuid: string, kind: 'ping' | 'tcp_ping', from: number, to: number) {
+    const url = new URL(this.url)
+    url.protocol = url.protocol === 'wss:' ? 'https:' : 'http:'
+    // Keep any reverse-proxy prefix before the standard RPC path.
+    url.pathname = url.pathname.replace(/\/(?:nodeget\/)?rpc\/?$/, '').replace(/\/$/, '') + '/nodeget/worker-route/latency-history'
+    url.search = ''
+    const response = await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: this.token, uuid, kind, from, to }),
+      signal: AbortSignal.timeout(25000), cache: 'no-store', credentials: 'omit',
+    })
+    if (!response.ok) throw new Error('长期延迟记录暂不可用')
+    return response.json() as Promise<import('./latencyHistory').HistoryResponse>
+  }
 }

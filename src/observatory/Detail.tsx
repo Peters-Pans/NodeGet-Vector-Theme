@@ -82,6 +82,10 @@ export function Detail({
   const rows = latencyType === "ping" ? latency.pingData : latency.tcpData;
   const queryError = latency.errors[latencyType];
   const truncated = latency.truncated[latencyType];
+  const aggregated = period.ms > 86400000;
+  const sampleCount = rows.reduce((n,r) => n + (r.aggregate?.samples ?? 1), 0);
+  const firstRecord = rows.length ? Math.min(...rows.map(r => r.aggregate?.first ?? r.timestamp)) : 0;
+  const lastRecord = rows.length ? Math.max(...rows.map(r => r.aggregate?.last ?? r.timestamp)) : 0;
   const recordDate = (timestamp: number) =>
     new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp).toLocaleString();
   const chart = useMemo(
@@ -284,14 +288,15 @@ export function Detail({
                 ? "正在查询…"
                 : queryError
                   ? "查询失败"
-                  : `${rows.length} 条记录`}
+                  : aggregated ? `${sampleCount.toLocaleString()} 次探测 · ${rows.length} 个汇总点` : `${rows.length} 条记录`}
             </span>
           </div>
-          {period.ms >= 30 * 86400000 && (
+          {aggregated && (
             <p className="subtle">
-              历史范围取决于后端保留的记录，图表和统计仅使用本次返回的数据。
+              {period.ms > 90 * 86400000 ? "小时汇总" : "5 分钟汇总"} · 均值与丢包率按探测次数计算，图表按时间合并显示。历史从已有记录开始积累，最新汇总会稍有延迟。
             </p>
           )}
+          {aggregated && queryError && !latency.loading && <p className="danger-text" role="status">长期历史查询失败，请确认后端已安装延迟历史扩展且当前连接有读取权限。</p>}
           {truncated && !latency.loading && (
             <p className="danger-text" role="status">
               已达到 {period.limit.toLocaleString()}{" "}
@@ -300,8 +305,8 @@ export function Detail({
           )}
           {rows.length > 0 && !latency.loading && (
             <p className="subtle">
-              记录覆盖：{recordDate(rows[0].timestamp)} —{" "}
-              {recordDate(rows[rows.length - 1].timestamp)}
+              记录覆盖：{recordDate(firstRecord)} —{" "}
+              {recordDate(lastRecord)}
             </p>
           )}
           {chart.series.length > 0 && (
@@ -399,10 +404,11 @@ export function Detail({
                   <div key={s.name}>
                     <strong>{s.name}</strong>
                     <span>均值 {s.avg?.toFixed(1) ?? "—"} ms</span>
-                    <span>抖动 {s.jitter?.toFixed(1) ?? "—"} ms</span>
+                    <span>{aggregated ? `峰值 ${s.max?.toFixed(1) ?? "—"} ms` : `抖动 ${s.jitter?.toFixed(1) ?? "—"} ms`}</span>
                     <span className={s.lossRate > 0 ? "danger-text" : ""}>
                       丢包 {s.lossRate.toFixed(1)}%
                     </span>
+                    {!!s.pending && <span>{s.pending.toLocaleString()} 次未完成，未计入丢包</span>}
                   </div>
                 ))}
             </div>

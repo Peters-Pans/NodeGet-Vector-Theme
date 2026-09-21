@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { taskQuery } from "../api/methods";
+import { historyRows } from "../api/latencyHistory";
 import type { BackendPool } from "../api/pool";
 import type { TaskQueryResult } from "../types";
 
@@ -11,11 +12,7 @@ function clean(rows: TaskQueryResult[] | undefined): TaskQueryResult[] {
     .sort((a, b) => a.timestamp - b.timestamp);
 }
 
-/**
- * 拉取节点的延迟(ping / tcp_ping)历史。
- * windowMs 决定时间窗口;limit 显式传给后端——task_query 默认封顶 1000 行且只回最近的一段,
- * 不传 limit 会让长窗口静默退化成「最近 ~2 小时」。统计值在组件侧按全量 rows 计算,图表再降采样。
- */
+/** 24 小时内查询原始探测；更长窗口使用后端汇总，避免原始记录上限截断历史。 */
 export function useNodeLatency(
   pool: BackendPool | null,
   source: string | null,
@@ -50,28 +47,17 @@ export function useNodeLatency(
       const window: [number, number] = [now - windowMs, now];
       setLoading(true);
 
-      const [ping, tcp] = await Promise.allSettled([
-        taskQuery(
-          entry.client,
-          [
-            { uuid },
-            { timestamp_from_to: window },
-            { type: "ping" },
-            { limit },
-          ],
-          QUERY_TIMEOUT_MS,
-        ),
-        taskQuery(
-          entry.client,
-          [
-            { uuid },
-            { timestamp_from_to: window },
-            { type: "tcp_ping" },
-            { limit },
-          ],
-          QUERY_TIMEOUT_MS,
-        ),
-      ]);
+      const [ping, tcp] = await Promise.allSettled(
+        (["ping", "tcp_ping"] as const).map(async kind => {
+          if (windowMs > 86400000) {
+            const history = await entry.client.latencyHistory(uuid, kind, window[0], window[1]);
+            return historyRows(history, uuid, kind);
+          }
+          return taskQuery(entry.client, [
+            { uuid }, { timestamp_from_to: window }, { type: kind }, { limit },
+          ], QUERY_TIMEOUT_MS);
+        }),
+      );
 
       if (cancelled) return;
       setPingData(ping.status === "fulfilled" ? clean(ping.value) : []);
@@ -81,9 +67,9 @@ export function useNodeLatency(
         tcp_ping: tcp.status === "rejected",
       });
       setTruncated({
-        ping: ping.status === "fulfilled" && (ping.value?.length ?? 0) >= limit,
+        ping: windowMs <= 86400000 && ping.status === "fulfilled" && (ping.value?.length ?? 0) >= limit,
         tcp_ping:
-          tcp.status === "fulfilled" && (tcp.value?.length ?? 0) >= limit,
+          windowMs <= 86400000 && tcp.status === "fulfilled" && (tcp.value?.length ?? 0) >= limit,
       });
       setLoading(false);
     };

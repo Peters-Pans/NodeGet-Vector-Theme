@@ -40,3 +40,7 @@ Cloudflare Pages：构建命令 `npm run build`，输出目录 `dist`。使用 `
 ## 来源与许可
 
 数据协议、API 客户端、数据 hooks 和工具函数沿用 [NodeGet-StatusShow](https://github.com/NodeSeekDev/NodeGet-StatusShow) 与 [Almanac](https://github.com/Peters-Pans/NodeGet-Almanac-Theme) 的基础。页面视觉与展示组件重新实现。遵循 AGPL-3.0，见 [LICENSE](LICENSE)。
+
+## 长期延迟历史
+
+0.3.0 支持后端汇总查询：原始记录 7 天、5 分钟汇总 90 天、小时汇总 365 天。24 小时内保持原始探测查询；更长范围需要安装 [延迟历史扩展](backend/latency-history/README.md)。已有历史从安装时仍保留的数据开始积累，已删除的数据不会恢复。

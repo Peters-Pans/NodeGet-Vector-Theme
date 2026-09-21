@@ -118,6 +118,7 @@ export interface UserConfig {
 export type SiteConfig = ThemeConfig & UserConfig
 
 export interface TaskQueryResult {
+  aggregate?: { samples: number; successes: number; failures: number; sum: number; max: number | null; first: number; last: number; resolution: number }
   task_id: number
   timestamp: number
   uuid: string

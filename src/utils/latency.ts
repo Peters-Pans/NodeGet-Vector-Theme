@@ -49,7 +49,7 @@ function forwardFill(data: ChartPoint[], names: string[]) {
   for (const pt of data) {
     for (const n of names) {
       const v = pt[n]
-      if (v == null) pt[n] = last[n]
+      if (!(n in pt)) pt[n] = last[n]
       else last[n] = v
     }
   }
@@ -94,7 +94,6 @@ export function buildLatencyChart(
     let pt = byTs.get(t)
     if (!pt) {
       pt = { t }
-      for (const n of names) pt[n] = null
       byTs.set(t, pt)
     }
     pt[r.cron_source || '未知'] = pickValue(r, type)
@@ -111,11 +110,25 @@ export interface LatencyStats {
   avg: number | null
   jitter: number | null
   lossRate: number
+  max?: number | null
+  samples?: number
+  pending?: number
 }
 
 export function computeLatencyStats(rows: TaskQueryResult[], type: LatencyType): LatencyStats[] {
   const stats = seriesNames(rows).map<LatencyStats>(name => {
     const list = rows.filter(r => (r.cron_source || '未知') === name)
+    if (list.some(r => r.aggregate)) {
+      let samples=0, successes=0, failures=0, sum=0, max: number | null=null;
+      for (const {aggregate:a} of list) {
+        if (!a) continue;
+        samples+=a.samples; successes+=a.successes; failures+=a.failures; sum+=a.sum;
+        if (a.max != null) max=max == null ? a.max : Math.max(max,a.max);
+      }
+      return { name, color:latencyColor(name), avg:successes ? sum/successes : null, jitter:null,
+        lossRate:successes+failures ? failures/(successes+failures)*100 : 0,
+        max,samples,pending:samples-successes-failures };
+    }
     const vals: number[] = []
     for (const r of list) {
       const v = pickValue(r, type)
