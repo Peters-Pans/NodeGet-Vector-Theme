@@ -150,6 +150,8 @@ export function Observatory() {
   }, []);
   useEffect(() => {
     document.documentElement.dataset.design = design;
+    const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (favicon) favicon.href = `./favicon-${design}.svg`;
     document.documentElement.dataset.light = String(light);
     try {
       localStorage.setItem("observatory.design", design);

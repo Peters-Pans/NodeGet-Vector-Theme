@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Next-generation server monitoring and management tools" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="./favicon-vector.svg" />
     <title>Observatory · NodeGet</title>
     <script>
       try {
         var design = new URLSearchParams(location.search).get('design') || localStorage.getItem('observatory.design') || 'vector';
         document.documentElement.dataset.design = design === 'orbit' ? 'orbit' : 'vector';
         document.documentElement.dataset.light = localStorage.getItem('observatory.light') || 'false';
+        document.querySelector('link[rel="icon"]').href = './favicon-' + document.documentElement.dataset.design + '.svg';
       } catch (_) {}
     </script>
     <link rel="stylesheet" href="./custom.css" />
