@@ -775,6 +775,7 @@ main {
   gap: 16px;
 }
 .node-card {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   background: var(--panel);
@@ -913,8 +914,8 @@ main {
 .card-network {
   margin: 0 18px;
   padding: 10px 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
   border-top: 1px solid var(--line);
@@ -1886,9 +1887,6 @@ main {
   .card-network {
     gap: 10px;
   }
-  .card-network .spark {
-    width: 52px;
-  }
 }
 @media (max-width: 760px) {
   .side-rail {
@@ -2072,9 +2070,7 @@ main {
     margin: 0 14px;
     gap: 8px;
   }
-  .card-network .spark {
-    display: none;
-  }
+
   .card-network b {
     font-size: 12px;
   }
@@ -2392,10 +2388,7 @@ main {
   .card-network b {
     font-size: 12px;
   }
-  .card-network .spark {
-    display: block;
-    width: 65px;
-  }
+
   .card-network small {
     font-size: 11px;
   }
@@ -2609,6 +2602,7 @@ main {
 }
 .card-network {
   height: auto;
+  gap: 8px;
   min-height: 45px;
 }
 .card-bottom,
@@ -2651,30 +2645,13 @@ main {
   line-height: 1.6;
 }
 
-.card-cpu-trend {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 46px;
-  flex-shrink: 0;
-  margin: 0 18px;
-  border-bottom: 1px solid var(--line);
-}
-.card-cpu-trend > span {
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.card-cpu-trend .spark {
-  width: 110px;
-  height: 28px;
-}
 .orbit-card-signal > span {
   font-size: 11px;
   letter-spacing: 0;
 }
 .card-network > span {
   min-width: 0;
+  flex: 0 0 auto;
   gap: 3px;
 }
 .card-network > span > svg {
@@ -2705,4 +2682,26 @@ main {
 }
 .attention-badges > li {
   white-space: nowrap;
+}
+
+.card-network .spark {
+  display: block;
+  flex: 1 1 70px;
+  min-width: 0;
+  max-width: 70px;
+  margin-left: auto;
+}
+@container (max-width: 260px) {
+  .card-network {
+    gap: 6px;
+  }
+  .card-network b {
+    font-size: 11px;
+  }
+  .card-network small {
+    font-size: 10px;
+  }
+  .card-network .spark {
+    display: none;
+  }
 }

@@ -125,13 +125,10 @@ export function NodeCard({
           <b>{node.online ? bytes(u.netOut) : "—"}</b>
           <small>/s</small>
         </span>
-      </div>
-      {design === "vector" && (
-        <div className="card-cpu-trend">
-          <span>CPU 近期趋势</span>
+        {design === "vector" && (
           <Spark values={node.history.map((h) => h.cpu)} />
-        </div>
-      )}
+        )}
+      </div>
       <div className="card-footer">
         <div className="card-bottom">
           <span>
