@@ -31,7 +31,14 @@ import { displayName } from "../utils/derive";
 import { Traffic, World } from "./Charts";
 import { NodeCard, NodeRows } from "./Nodes";
 import { Detail } from "./Detail";
-import { selectNodes, summarize, type Design, type Scope } from "./model";
+import {
+  attentionLabels,
+  type AttentionCategory,
+  selectNodes,
+  summarize,
+  type Design,
+  type Scope,
+} from "./model";
 function preference(key: string, fallback: string) {
   try {
     return localStorage.getItem(key) || fallback;
@@ -132,7 +139,7 @@ export function Observatory() {
     { nodes: nodeMap, loading, errors, pool } = useNodes(config);
   const [design, setDesign] = useState<Design>(initialDesign),
     [light, setLight] = useState(
-      () => preference("observatory.light", "false") === "true",
+      () => preference("observatory.light", "true") === "true",
     );
   const [view, setView] = useState<View>("cards"),
     [scope, setScope] = useState<Scope>("all"),
@@ -184,6 +191,22 @@ export function Observatory() {
       [nodeMap],
     ),
     summary = summarize(nodes);
+  const attentionBreakdown = summary.attention > 0 && (
+    <div
+      className="attention-summary"
+      aria-label="待关注分类"
+      title="按节点计数，同一节点可能同时有多类提醒"
+    >
+      {(Object.keys(attentionLabels) as AttentionCategory[])
+        .filter((category) => summary.attentionCounts[category] > 0)
+        .map((category) => (
+          <span key={category} className={category}>
+            {attentionLabels[category]}{" "}
+            <strong>{summary.attentionCounts[category]}</strong>
+          </span>
+        ))}
+    </div>
+  );
   const filtered = selectNodes(nodes, search, region, tag, scope, sort);
   const regions = [
       ...new Set(nodes.map((n) => n.meta.region).filter(Boolean)),
@@ -416,6 +439,7 @@ export function Observatory() {
                   <span>{regions.length} 个区域</span>
                   <span>{summary.attention} 个待关注</span>
                 </div>
+                {attentionBreakdown}
               </div>
               <div className="traffic-panel">
                 <div className="panel-label">
@@ -519,18 +543,17 @@ export function Observatory() {
                     <span>需要关注</span>
                   </div>
                 </div>
+                {attentionBreakdown}
                 <button
                   className="orbit-explore"
                   onClick={() => {
                     setView("map");
-                    document
-                      .getElementById("node-section")
-                      ?.scrollIntoView({
-                        behavior: matchMedia("(prefers-reduced-motion: reduce)")
-                          .matches
-                          ? "auto"
-                          : "smooth",
-                      });
+                    document.getElementById("node-section")?.scrollIntoView({
+                      behavior: matchMedia("(prefers-reduced-motion: reduce)")
+                        .matches
+                        ? "auto"
+                        : "smooth",
+                    });
                   }}
                 >
                   探索节点分布 <ArrowUpRight size={17} />

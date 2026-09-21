@@ -145,3 +145,18 @@ export function computeLatencyStats(rows: TaskQueryResult[], type: LatencyType):
     return a.lossRate - b.lossRate
   })
 }
+
+// 根据实际数据覆盖范围选择刻度，避免长查询只返回一天时重复显示同一日期。
+export function formatLatencyTick(timestamp: number, first: number, last: number) {
+  const date = new Date(normalizeTs(timestamp));
+  const start = new Date(normalizeTs(first));
+  const end = new Date(normalizeTs(last));
+  const span = end.getTime() - start.getTime();
+  const crossesYear = start.getFullYear() !== end.getFullYear();
+  if (span <= 2 * 86400000) {
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (start.toDateString() === end.toDateString()) return time;
+    return `${date.toLocaleDateString([], { month: '2-digit', day: '2-digit', ...(crossesYear ? { year: '2-digit' as const } : {}) })} ${time}`;
+  }
+  return date.toLocaleDateString([], { month: '2-digit', day: '2-digit', ...(crossesYear || span >= 180 * 86400000 ? { year: '2-digit' as const } : {}) });
+}

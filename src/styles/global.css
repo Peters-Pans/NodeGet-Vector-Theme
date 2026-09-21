@@ -5,7 +5,7 @@
   --panel: #151919;
   --panel-hover: #1a2020;
   --text: #e9eeeb;
-  --muted: #8c9893;
+  --muted: #abb7b1;
   --line: #2a3230;
   --accent: #c2f878;
   --accent-ink: #10180b;
@@ -15,6 +15,12 @@
   --warm: #efc37c;
   --rail: #101414;
   --shadow: 0 24px 80px #0004;
+  --series-1: #a5d8ff;
+  --series-2: #a6f078;
+  --series-3: #cfb5ff;
+  --series-4: #ffd38a;
+  --series-5: #ff94b3;
+  --series-6: #62e6d0;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -25,7 +31,7 @@
   --panel: #111d33;
   --panel-hover: #17263e;
   --text: #eaf2ff;
-  --muted: #8b9fbc;
+  --muted: #afbdd4;
   --line: #243550;
   --accent: #94cdff;
   --accent-ink: #0b1b2a;
@@ -39,7 +45,7 @@
   --panel: #fff;
   --panel-hover: #f7f9f3;
   --text: #19231d;
-  --muted: #647067;
+  --muted: #536157;
   --line: #d8dfd4;
   --accent: #3e710f;
   --accent-ink: #fff;
@@ -49,13 +55,19 @@
   --danger: #c3314a;
   --warm: #9d660d;
   --shadow: 0 24px 80px #22331a16;
+  --series-1: #1769aa;
+  --series-2: #39780e;
+  --series-3: #8256b3;
+  --series-4: #a8640a;
+  --series-5: #ba3f6e;
+  --series-6: #087e75;
 }
 :root[data-design="orbit"][data-light="true"] {
   --bg: #edf3fb;
   --panel: #ffffff;
   --panel-hover: #f2f6fe;
   --text: #152b4b;
-  --muted: #617692;
+  --muted: #526783;
   --line: #d6e1ef;
   --accent: #3268b9;
   --accent-ink: #fff;
@@ -158,7 +170,7 @@ button:hover {
 }
 .subtle {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 .eyebrow {
   display: block;
@@ -475,7 +487,7 @@ main {
 }
 .health-label {
   color: var(--accent);
-  font-size: 10px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -509,7 +521,7 @@ main {
   display: flex;
   justify-content: space-between;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .chart-key {
   font-size: 9px !important;
@@ -688,7 +700,7 @@ main {
 }
 .segmented button {
   padding: 6px 10px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   border-radius: 4px;
   display: flex;
@@ -728,7 +740,7 @@ main {
   background: transparent;
   min-width: 0;
   width: 100%;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text);
 }
 .search:focus-within {
@@ -754,7 +766,7 @@ main {
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 0 24px 0 10px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .node-grid,
 .loading-grid {
@@ -796,7 +808,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--accent);
 }
 .status i {
@@ -822,7 +834,7 @@ main {
   flex: 1;
 }
 .card-title strong {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   display: block;
   overflow: hidden;
@@ -833,7 +845,7 @@ main {
 .card-title small {
   display: block;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -862,11 +874,11 @@ main {
   display: flex;
   justify-content: space-between;
   gap: 5px;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--muted);
 }
 .meter strong {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--text);
 }
@@ -893,7 +905,7 @@ main {
   display: block;
   margin-top: 8px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 .card-network {
@@ -919,11 +931,11 @@ main {
   color: var(--secondary);
 }
 .card-network b {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
 }
 .card-network small {
-  font-size: 8px;
+  font-size: 11px;
   color: var(--muted);
 }
 .spark {
@@ -938,7 +950,7 @@ main {
   justify-content: space-between;
   gap: 8px;
   padding: 13px 18px;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--muted);
 }
 .card-bottom em {
@@ -953,7 +965,7 @@ main {
   gap: 8px;
   border-top: 1px solid var(--line);
   padding: 10px 18px;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--muted);
   min-height: 34px;
   background: color-mix(in srgb, var(--bg) 30%, transparent);
@@ -968,7 +980,7 @@ main {
   background: var(--soft);
   border: 1px solid var(--line);
   border-radius: 3px;
-  font-size: 8px;
+  font-size: 11px;
   padding: 2px 5px;
 }
 .is-offline .card-title,
@@ -1404,7 +1416,7 @@ main {
   border-radius: 5px;
 }
 .orbit .meter-label {
-  font-size: 9px;
+  font-size: 12px;
 }
 .orbit .card-network {
   margin: 0 20px;
@@ -1417,7 +1429,7 @@ main {
 }
 .orbit .card-bottom {
   padding: 13px 20px;
-  font-size: 9px;
+  font-size: 12px;
 }
 .orbit .card-meta {
   padding: 11px 20px;
@@ -1577,7 +1589,7 @@ main {
 }
 .node-table .meter strong {
   font-weight: 400;
-  font-size: 10px;
+  font-size: 12px;
 }
 .map-panel {
   background: #111c2b;
@@ -1636,7 +1648,7 @@ main {
   font-size: 11px;
 }
 .detail-header .status .subtle {
-  font-size: 10px;
+  font-size: 13px;
 }
 .detail-header .icon-button {
   position: sticky;
@@ -1652,7 +1664,7 @@ main {
   padding: 20px;
 }
 .detail-meters .meter-label {
-  font-size: 11px;
+  font-size: 12px;
 }
 .detail-meters .meter strong {
   font-size: 17px;
@@ -1670,7 +1682,10 @@ main {
   margin: 20px 0 13px;
 }
 .detail-section > p {
-  font-size: 10px;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
 }
 .detail-network {
   display: grid;
@@ -1722,7 +1737,7 @@ main {
   display: flex;
   gap: 16px;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 12px;
   padding: 10px;
   border-radius: 4px;
   background: var(--bg);
@@ -1740,7 +1755,7 @@ main {
 }
 .spec-grid dt {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .spec-grid dd {
   margin: 7px 0 0;
@@ -1808,13 +1823,13 @@ main {
     gap: 12px;
   }
   .orbit .card-network b {
-    font-size: 10px;
+    font-size: 12px;
   }
   .orbit .node-grid {
     gap: 14px;
   }
   .orbit .card-title strong {
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 @media (max-width: 980px) {
@@ -1998,7 +2013,7 @@ main {
     display: none;
   }
   .fleet-footer {
-    font-size: 8px;
+    font-size: 12px;
   }
   .fleet-ticks {
     height: 20px;
@@ -2020,7 +2035,7 @@ main {
   .filter-selects select {
     max-width: none;
     width: 100%;
-    font-size: 9px;
+    font-size: 12px;
   }
   .section-heading h2 {
     font-size: 17px;
@@ -2042,7 +2057,7 @@ main {
     padding: 14px;
   }
   .card-title strong {
-    font-size: 12px;
+    font-size: 15px;
   }
   .card-top {
     padding: 14px 14px 0;
@@ -2058,18 +2073,18 @@ main {
     display: none;
   }
   .card-network b {
-    font-size: 9px;
+    font-size: 12px;
   }
   .card-network small {
-    font-size: 7px;
+    font-size: 11px;
   }
   .card-bottom {
     padding: 12px 14px;
-    font-size: 8px;
+    font-size: 12px;
   }
   .card-meta {
     padding: 9px 14px;
-    font-size: 8px;
+    font-size: 12px;
   }
   .server-icon {
     height: 30px;
@@ -2211,7 +2226,7 @@ main {
     gap: 12px;
   }
   .orbit .card-title strong {
-    font-size: 13px;
+    font-size: 15px;
   }
   .orbit-card-signal {
     padding: 7px 16px;
@@ -2231,15 +2246,15 @@ main {
     margin: 0 16px;
   }
   .orbit .card-network b {
-    font-size: 9px;
+    font-size: 12px;
   }
   .orbit .card-bottom {
     padding: 12px 16px;
-    font-size: 8px;
+    font-size: 12px;
   }
   .orbit .card-meta {
     padding: 9px 16px;
-    font-size: 8px;
+    font-size: 12px;
   }
   .footer {
     font-size: 8px;
@@ -2258,7 +2273,7 @@ main {
     align-items: flex-start;
   }
   .map-panel .subtle {
-    font-size: 9px;
+    font-size: 13px;
     max-width: 90px;
   }
   .detail-content {
@@ -2309,7 +2324,7 @@ main {
   .health-label {
     grid-column: 1/2;
     grid-row: 3;
-    font-size: 9px;
+    font-size: 12px;
   }
   .fleet-ticks {
     grid-column: 2/3;
@@ -2323,7 +2338,7 @@ main {
     grid-column: 2/3;
     grid-row: 3;
     align-items: center;
-    font-size: 9px;
+    font-size: 12px;
   }
   .traffic-panel {
     padding: 20px;
@@ -2362,31 +2377,31 @@ main {
     gap: 22px;
   }
   .meter-label {
-    font-size: 10px;
+    font-size: 12px;
   }
   .meter strong {
-    font-size: 11px;
+    font-size: 12px;
   }
   .card-network {
     margin: 0 18px;
     gap: 18px;
   }
   .card-network b {
-    font-size: 11px;
+    font-size: 12px;
   }
   .card-network .spark {
     display: block;
     width: 65px;
   }
   .card-network small {
-    font-size: 9px;
+    font-size: 11px;
   }
   .card-bottom {
-    font-size: 10px;
+    font-size: 12px;
     padding: 14px 18px;
   }
   .card-meta {
-    font-size: 9px;
+    font-size: 12px;
     padding: 10px 18px;
   }
   .page-heading p {
@@ -2485,11 +2500,11 @@ main {
   }
   .orbit .card-bottom {
     padding: 14px 21px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .orbit .card-meta {
     padding: 11px 21px;
-    font-size: 9px;
+    font-size: 12px;
   }
   .footer > span {
     flex-wrap: wrap;
@@ -2517,7 +2532,7 @@ main {
     gap: 19px;
   }
   .detail-meters .meter small {
-    font-size: 9px;
+    font-size: 12px;
   }
   .spec-grid {
     grid-template-columns: 1fr;
@@ -2532,7 +2547,7 @@ main {
   .latency-toolbar .segmented button {
     flex: 1;
     padding: 6px 8px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .error-panel {
     align-items: flex-start;
@@ -2550,4 +2565,86 @@ main {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Readable supporting text and explicit attention reasons across both themes. */
+.attention-summary,
+.attention-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.attention-summary {
+  margin-top: 12px;
+}
+.attention-summary > span,
+.attention-badges > li {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--danger) 25%, var(--line));
+  border-radius: 5px;
+  padding: 3px 7px;
+}
+.attention-summary .expiry,
+.attention-badges .expiry {
+  color: var(--warm);
+  background: color-mix(in srgb, var(--warm) 8%, var(--panel));
+  border-color: color-mix(in srgb, var(--warm) 25%, var(--line));
+}
+.attention-badges {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.node-card > .attention-badges {
+  margin: 0 18px 14px;
+}
+.node-table .attention-badges {
+  margin: 8px 0 0;
+}
+.card-network {
+  flex-wrap: wrap;
+  height: auto;
+  min-height: 45px;
+}
+.card-bottom,
+.card-meta {
+  flex-wrap: wrap;
+}
+.latency-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 10px;
+}
+.latency-legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+}
+.latency-legend button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--soft);
+}
+.latency-legend button:hover {
+  background: var(--panel-hover);
+}
+.latency-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.latency-legend > .subtle {
+  flex-basis: 100%;
+  line-height: 1.6;
 }

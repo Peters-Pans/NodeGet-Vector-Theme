@@ -20,7 +20,11 @@ import {
 import type { Node, LatencyType } from "../types";
 import type { BackendPool } from "../api/pool";
 import { useNodeLatency } from "../hooks/useNodeLatency";
-import { buildLatencyChart, computeLatencyStats } from "../utils/latency";
+import {
+  buildLatencyChart,
+  computeLatencyStats,
+  formatLatencyTick,
+} from "../utils/latency";
 import {
   cpuLabel,
   deriveUsage,
@@ -29,7 +33,7 @@ import {
   virtLabel,
 } from "../utils/derive";
 import { bytes, money, pct, relativeAge, uptime } from "../utils/format";
-import { Meter } from "./Nodes";
+import { AttentionBadges, Meter } from "./Nodes";
 const windows = [
   { label: "1 小时", ms: 3600000, limit: 2000, refresh: 10000 },
   { label: "6 小时", ms: 21600000, limit: 6000, refresh: 30000 },
@@ -41,12 +45,12 @@ const windows = [
   { label: "365 天", ms: 365 * 86400000, limit: 50000, refresh: 1800000 },
 ];
 const palette = [
-  "#a5d8ff",
-  "#a6f078",
-  "#cfb5ff",
-  "#ffd38a",
-  "#ff94b3",
-  "#62e6d0",
+  "var(--series-1)",
+  "var(--series-2)",
+  "var(--series-3)",
+  "var(--series-4)",
+  "var(--series-5)",
+  "var(--series-6)",
 ];
 export function Detail({
   node,
@@ -62,6 +66,10 @@ export function Detail({
   const [metric, setMetric] = useState<"cpu" | "mem" | "disk">("cpu"),
     [windowIndex, setWindowIndex] = useState(0),
     [latencyType, setLatencyType] = useState<LatencyType>("ping");
+  const [focusedSeries, setFocusedSeries] = useState<string | null>(null);
+  useEffect(() => {
+    setFocusedSeries(null);
+  }, [node.uuid, node.source, latencyType]);
   const period = windows[windowIndex];
   const latency = useNodeLatency(
     pool,
@@ -80,6 +88,9 @@ export function Detail({
     () => buildLatencyChart(rows, latencyType),
     [rows, latencyType],
   );
+  const activeSeries = chart.series.some((s) => s.name === focusedSeries)
+    ? focusedSeries
+    : null;
   const stats = useMemo(
     () => computeLatencyStats(rows, latencyType),
     [rows, latencyType],
@@ -132,6 +143,7 @@ export function Detail({
             <X size={20} />
           </button>
         </header>
+        <AttentionBadges node={node} />
         <div className="detail-meters">
           <Meter label="CPU" value={u.cpu} detail={cpuLabel(node) || "—"} />
           <Meter
@@ -176,14 +188,14 @@ export function Detail({
                       })
                     }
                     stroke="var(--muted)"
-                    fontSize={10}
+                    fontSize={12}
                     minTickGap={45}
                   />
                   <YAxis
                     domain={[0, 100]}
                     tickFormatter={(v) => `${v}%`}
                     stroke="var(--muted)"
-                    fontSize={10}
+                    fontSize={12}
                     width={35}
                   />
                   <Tooltip
@@ -292,6 +304,35 @@ export function Detail({
               {recordDate(rows[rows.length - 1].timestamp)}
             </p>
           )}
+          {chart.series.length > 0 && (
+            <div
+              className="latency-legend"
+              role="group"
+              aria-label="延迟线路选择"
+            >
+              <button
+                aria-pressed={!activeSeries}
+                onClick={() => setFocusedSeries(null)}
+              >
+                全部线路
+              </button>
+              {chart.series.map((series, i) => (
+                <button
+                  key={series.name}
+                  aria-pressed={activeSeries === series.name}
+                  onClick={() =>
+                    setFocusedSeries(
+                      activeSeries === series.name ? null : series.name,
+                    )
+                  }
+                >
+                  <i style={{ background: palette[i % palette.length] }} />
+                  {series.name}
+                </button>
+              ))}
+              <span className="subtle">点击线路单独查看，再次点击恢复全部</span>
+            </div>
+          )}
           <div className="detail-chart">
             {!chart.data.length ? (
               <div className="chart-wait">
@@ -312,27 +353,23 @@ export function Detail({
                   <CartesianGrid stroke="var(--line)" vertical={false} />
                   <XAxis
                     dataKey="t"
+                    type="number"
+                    domain={["dataMin", "dataMax"]}
                     stroke="var(--muted)"
-                    fontSize={10}
-                    minTickGap={60}
+                    fontSize={12}
+                    minTickGap={35}
+                    tickCount={5}
                     tickFormatter={(v) =>
-                      period.ms >= 7 * 86400000
-                        ? new Date(v).toLocaleDateString([], {
-                            month: "2-digit",
-                            day: "2-digit",
-                            ...(period.ms >= 365 * 86400000
-                              ? { year: "2-digit" as const }
-                              : {}),
-                          })
-                        : new Date(v).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
+                      formatLatencyTick(
+                        v,
+                        rows[0].timestamp,
+                        rows[rows.length - 1].timestamp,
+                      )
                     }
                   />
                   <YAxis
                     stroke="var(--muted)"
-                    fontSize={10}
+                    fontSize={12}
                     width={45}
                     tickFormatter={(v) => `${v}ms`}
                   />
@@ -345,6 +382,7 @@ export function Detail({
                       key={s.name}
                       dataKey={s.name}
                       stroke={palette[i % palette.length]}
+                      hide={activeSeries !== null && s.name !== activeSeries}
                       dot={false}
                       isAnimationActive={false}
                     />
@@ -355,16 +393,18 @@ export function Detail({
           </div>
           {stats.length > 0 && (
             <div className="latency-stats">
-              {stats.map((s) => (
-                <div key={s.name}>
-                  <strong>{s.name}</strong>
-                  <span>均值 {s.avg?.toFixed(1) ?? "—"} ms</span>
-                  <span>抖动 {s.jitter?.toFixed(1) ?? "—"} ms</span>
-                  <span className={s.lossRate > 0 ? "danger-text" : ""}>
-                    丢包 {s.lossRate.toFixed(1)}%
-                  </span>
-                </div>
-              ))}
+              {stats
+                .filter((s) => !activeSeries || s.name === activeSeries)
+                .map((s) => (
+                  <div key={s.name}>
+                    <strong>{s.name}</strong>
+                    <span>均值 {s.avg?.toFixed(1) ?? "—"} ms</span>
+                    <span>抖动 {s.jitter?.toFixed(1) ?? "—"} ms</span>
+                    <span className={s.lossRate > 0 ? "danger-text" : ""}>
+                      丢包 {s.lossRate.toFixed(1)}%
+                    </span>
+                  </div>
+                ))}
             </div>
           )}
         </section>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-default-design="vector">
+<html lang="zh-CN" data-default-design="vector" data-light="true">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +10,7 @@
       try {
         var design = new URLSearchParams(location.search).get('design') || localStorage.getItem('observatory.design') || 'vector';
         document.documentElement.dataset.design = design === 'orbit' ? 'orbit' : 'vector';
-        document.documentElement.dataset.light = localStorage.getItem('observatory.light') || 'false';
+        document.documentElement.dataset.light = localStorage.getItem('observatory.light') || 'true';
         document.querySelector('link[rel="icon"]').href = './favicon-' + document.documentElement.dataset.design + '.svg';
       } catch (_) {}
     </script>

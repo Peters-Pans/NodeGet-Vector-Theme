@@ -11,7 +11,28 @@ import type { Node } from "../types";
 import { cpuLabel, deriveUsage, displayName, osLabel } from "../utils/derive";
 import { bytes, expiry, money, pct, uptime } from "../utils/format";
 import { Spark } from "./Charts";
-import type { Design } from "./model";
+import { attentionReasons, type Design } from "./model";
+export function AttentionBadges({
+  node,
+  showExpiry = true,
+}: {
+  node: Node;
+  showExpiry?: boolean;
+}) {
+  const reasons = attentionReasons(node).filter(
+    (reason) => showExpiry || reason.category !== "expiry",
+  );
+  if (!reasons.length) return null;
+  return (
+    <ul className="attention-badges" aria-label="关注原因">
+      {reasons.map((reason) => (
+        <li key={reason.label} className={reason.category}>
+          {reason.label}
+        </li>
+      ))}
+    </ul>
+  );
+}
 export function Meter({
   label,
   value,
@@ -87,6 +108,7 @@ export function NodeCard({
           <Spark values={node.history.map((h) => h.cpu)} />
         </div>
       )}
+      <AttentionBadges node={node} showExpiry={false} />
       <div className="card-meters">
         <Meter label="CPU" value={u.cpu} />
         <Meter label="内存" value={u.mem} />
@@ -180,6 +202,7 @@ export function NodeRows({
                     <i />
                     {n.online ? "在线" : "离线"}
                   </span>
+                  <AttentionBadges node={n} />
                 </td>
                 <td>
                   <Meter label="CPU" value={u.cpu} />
