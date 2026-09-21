@@ -35,6 +35,10 @@ const windows = [
   { label: "6 小时", ms: 21600000, limit: 6000, refresh: 30000 },
   { label: "24 小时", ms: 86400000, limit: 20000, refresh: 60000 },
   { label: "7 天", ms: 604800000, limit: 50000, refresh: 120000 },
+  { label: "30 天", ms: 30 * 86400000, limit: 50000, refresh: 300000 },
+  { label: "90 天", ms: 90 * 86400000, limit: 50000, refresh: 600000 },
+  { label: "180 天", ms: 180 * 86400000, limit: 50000, refresh: 900000 },
+  { label: "365 天", ms: 365 * 86400000, limit: 50000, refresh: 1800000 },
 ];
 const palette = [
   "#a5d8ff",
@@ -68,6 +72,10 @@ export function Detail({
     period.refresh,
   );
   const rows = latencyType === "ping" ? latency.pingData : latency.tcpData;
+  const queryError = latency.errors[latencyType];
+  const truncated = latency.truncated[latencyType];
+  const recordDate = (timestamp: number) =>
+    new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp).toLocaleString();
   const chart = useMemo(
     () => buildLatencyChart(rows, latencyType),
     [rows, latencyType],
@@ -247,10 +255,11 @@ export function Detail({
             </div>
           </div>
           <div className="latency-toolbar">
-            <div className="segmented">
+            <div className="segmented" role="group" aria-label="延迟时间范围">
               {windows.map((w, i) => (
                 <button
                   key={w.label}
+                  aria-pressed={i === windowIndex}
                   className={i === windowIndex ? "active" : ""}
                   onClick={() => setWindowIndex(i)}
                 >
@@ -259,16 +268,43 @@ export function Detail({
               ))}
             </div>
             <span className="subtle">
-              {latency.loading ? "正在查询…" : `${rows.length} 条记录`}
+              {latency.loading
+                ? "正在查询…"
+                : queryError
+                  ? "查询失败"
+                  : `${rows.length} 条记录`}
             </span>
           </div>
+          {period.ms >= 30 * 86400000 && (
+            <p className="subtle">
+              历史范围取决于后端保留的记录，图表和统计仅使用本次返回的数据。
+            </p>
+          )}
+          {truncated && !latency.loading && (
+            <p className="danger-text" role="status">
+              已达到 {period.limit.toLocaleString()}{" "}
+              条查询上限，当前结果可能未覆盖整个时间范围。可缩短时间范围查看。
+            </p>
+          )}
+          {rows.length > 0 && !latency.loading && (
+            <p className="subtle">
+              记录覆盖：{recordDate(rows[0].timestamp)} —{" "}
+              {recordDate(rows[rows.length - 1].timestamp)}
+            </p>
+          )}
           <div className="detail-chart">
             {!chart.data.length ? (
               <div className="chart-wait">
                 {latency.loading
                   ? "正在读取延迟记录"
-                  : "此时间范围暂无延迟记录"}
-                <span>需要后端配置 Ping / TCP Ping 定时任务</span>
+                  : queryError
+                    ? "延迟记录查询失败"
+                    : "此时间范围暂无延迟记录"}
+                <span>
+                  {queryError
+                    ? "请稍后重试，或选择较短的时间范围"
+                    : "需要后端配置 Ping / TCP Ping 定时任务并保留历史记录"}
+                </span>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -280,10 +316,18 @@ export function Detail({
                     fontSize={10}
                     minTickGap={60}
                     tickFormatter={(v) =>
-                      new Date(v).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
+                      period.ms >= 7 * 86400000
+                        ? new Date(v).toLocaleDateString([], {
+                            month: "2-digit",
+                            day: "2-digit",
+                            ...(period.ms >= 365 * 86400000
+                              ? { year: "2-digit" as const }
+                              : {}),
+                          })
+                        : new Date(v).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                     }
                   />
                   <YAxis
