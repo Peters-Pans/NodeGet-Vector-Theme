@@ -28,7 +28,7 @@ export function attentionReasons(node: Node) {
   if (exp?.level === "crit")
     reasons.push({
       category: "expiry",
-      label: exp.days < 0 ? "登记到期日已过" : `登记到期日剩余 ${exp.days} 天`,
+      label: exp.days < 0 ? "已过期" : `登记到期日剩余 ${exp.days} 天`,
     });
   return reasons;
 }

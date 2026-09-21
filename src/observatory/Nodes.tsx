@@ -104,7 +104,7 @@ export function NodeCard({
       </button>
       {design === "orbit" && (
         <div className="orbit-card-signal">
-          <span>PROCESSOR LOAD</span>
+          <span>CPU 近期趋势</span>
           <Spark values={node.history.map((h) => h.cpu)} />
         </div>
       )}
@@ -125,40 +125,49 @@ export function NodeCard({
           <b>{node.online ? bytes(u.netOut) : "—"}</b>
           <small>/s</small>
         </span>
-        {design === "vector" && (
+      </div>
+      {design === "vector" && (
+        <div className="card-cpu-trend">
+          <span>CPU 近期趋势</span>
           <Spark values={node.history.map((h) => h.cpu)} />
-        )}
-      </div>
-      <div className="card-bottom">
-        <span>
-          {node.static.cpu?.physical_cores ||
-            node.static.cpu?.per_core?.length ||
-            "—"}{" "}
-          核 <em>·</em> {bytes(u.memTotal)}
-        </span>
-        <span>运行 {uptime(u.uptime)}</span>
-      </div>
-      {(node.meta.tags.length > 0 || exp || node.meta.price > 0) && (
-        <div className="card-meta">
-          <span>
-            {node.meta.tags.slice(0, 2).map((t) => (
-              <span className="tag" key={t}>
-                {t}
-              </span>
-            ))}
-            {money(node.meta.price, node.meta.priceUnit, node.meta.priceCycle)}
-          </span>
-          {exp && (
-            <span className={exp.level === "crit" ? "danger-text" : ""}>
-              {exp.days < 0
-                ? "已到期"
-                : exp.days > 3650
-                  ? `到期 ${exp.date}`
-                  : `${exp.days} 天后到期`}
-            </span>
-          )}
         </div>
       )}
+      <div className="card-footer">
+        <div className="card-bottom">
+          <span>
+            {node.static.cpu?.physical_cores ||
+              node.static.cpu?.per_core?.length ||
+              "—"}{" "}
+            核 <em>·</em> {bytes(u.memTotal)}
+          </span>
+          <span>运行 {uptime(u.uptime)}</span>
+        </div>
+        {(node.meta.tags.length > 0 || exp || node.meta.price > 0) && (
+          <div className="card-meta">
+            <span>
+              {node.meta.tags.slice(0, 2).map((t) => (
+                <span className="tag" key={t}>
+                  {t}
+                </span>
+              ))}
+              {money(
+                node.meta.price,
+                node.meta.priceUnit,
+                node.meta.priceCycle,
+              )}
+            </span>
+            {exp && (
+              <span className={exp.level === "crit" ? "danger-text" : ""}>
+                {exp.days < 0
+                  ? "已过期"
+                  : exp.days > 3650
+                    ? `到期 ${exp.date}`
+                    : `${exp.days} 天后到期`}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </article>
   );
 }
@@ -213,9 +222,8 @@ export function NodeRows({
                 <td>
                   <Meter label="磁盘" value={u.disk} />
                 </td>
-                <td className="mono">
-                  {n.online ? bytes(u.netIn) : "—"}/s
-                  <br />
+                <td className="mono table-bandwidth">
+                  <span>{n.online ? bytes(u.netIn) : "—"}/s</span>
                   <span className="subtle">
                     {n.online ? bytes(u.netOut) : "—"}/s
                   </span>
