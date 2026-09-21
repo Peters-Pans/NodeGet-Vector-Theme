@@ -10,5 +10,9 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputPath = resolve(projectRoot, 'dist/config.json')
 // 写入输出文件
 const finalConfig = buildConfig()
+// Replace the previous theme's default signature while preserving custom footer text.
+if (finalConfig.user_preferences.footer === 'Powered by NodeGet · Almanac') {
+  finalConfig.user_preferences.footer = 'Powered by NodeGet'
+}
 writeFileSync(outputPath, JSON.stringify(finalConfig, null, 2) + '\n')
 console.log(`[build-config] wrote ${finalConfig.site_tokens.length} site_tokens to ${outputPath}`)

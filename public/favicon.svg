@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="4" fill="#bd6338"/>
-  <text x="16" y="22.5" font-family="Newsreader, Georgia, serif" font-size="20" font-weight="600" fill="#fbf8f0" text-anchor="middle">P</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#101414"/><path d="M14 18h9l9 23 9-23h9L36 50h-8Z" fill="#c2f878"/><circle cx="32" cy="14" r="3" fill="#c2f878"/></svg>

@@ -122,16 +122,21 @@ export function useNodes(config: SiteConfig | null) {
   const [pool, setPool] = useState<BackendPool | null>(null)
 
   useEffect(() => {
+    if (!config) return
     if (!config?.site_tokens?.length) {
       setLoading(false)
       return
     }
+    setLoading(true)
+    setErrors([])
+    let cancelled = false
     const pool = new BackendPool(config.site_tokens)
     setPool(pool)
     const sourceUuids = new Map<string, string[]>()
 
     const bootstrap = async () => {
       const agentsRes = await pool.fanout(listAgentUuids)
+      if (cancelled) return
       setErrors(prev => [...prev, ...agentsRes.errors])
 
       const seed = new Map<string, Agent>()
@@ -152,6 +157,7 @@ export function useNodes(config: SiteConfig | null) {
             kvGetMulti(entry.client, kvItems),
             staticDataMulti(entry.client, uuids, STATIC_FIELDS),
           ])
+          if (cancelled) return
 
           setAgents(prev => {
             const next = new Map(prev)
@@ -183,6 +189,7 @@ export function useNodes(config: SiteConfig | null) {
       )
 
       await tickDynamic()
+      if (cancelled) return
       setLoading(false)
     }
 
@@ -198,7 +205,7 @@ export function useNodes(config: SiteConfig | null) {
           } catch {}
         }),
       )
-      if (!updates.length) return
+      if (cancelled || !updates.length) return
 
       setLive(prev => {
         const next = new Map(prev)
@@ -218,6 +225,7 @@ export function useNodes(config: SiteConfig | null) {
     }
 
     bootstrap().catch((e: unknown) => {
+      if (cancelled) return
       setErrors(prev => [...prev, { source: '*', error: e }])
       setLoading(false)
     })
@@ -231,6 +239,7 @@ export function useNodes(config: SiteConfig | null) {
     const clockTimer = setInterval(() => setTick(t => t + 1), 5000)
 
     return () => {
+      cancelled = true
       clearInterval(dynTimer)
       clearInterval(clockTimer)
       document.removeEventListener('visibilitychange', onVisible)

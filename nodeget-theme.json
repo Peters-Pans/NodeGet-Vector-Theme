@@ -1,10 +1,10 @@
 {
-  "name": "Almanac",
-  "short": "Almanac",
-  "description": "暖调编辑风 NodeGet 状态页主题 · A warm, editorial status-page theme for NodeGet",
+  "name": "VECTOR",
+  "short": "VECTOR",
+  "description": "NodeGet 服务器观测主题：深墨色与荧光绿的精密仪表台",
   "author": "Peters-Pans",
-  "repository": "https://github.com/Peters-Pans/NodeGet-Almanac-Theme",
-  "dist_page": "https://nodeget-almanac-theme.pages.dev",
+  "repository": "https://github.com/Peters-Pans/NodeGet-Vector-Theme",
+  "dist_page": "https://control.121299.top",
   "user_preferences_form": {
     "version": "0.0.1",
     "items": [
@@ -32,5 +32,5 @@
     ]
   },
   "version": "will be auto filled using version in package.json",
-  "license": ""
+  "license": "AGPL-3.0"
 }

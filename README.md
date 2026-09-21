@@ -1,55 +1,40 @@
-# Almanac · NodeGet 状态页主题
+# VECTOR · NodeGet 主题
 
-暖调编辑风的 [NodeGet](https://github.com/NodeSeekDev/NodeGet) 服务器状态展示页 —— 米白纸底、陶土强调、衬线标题、大留白，明暗双态。刻意避开常见深色科技风。
+深墨色、荧光绿、侧边导航与精密仪表分区。
 
-> A warm, editorial status-page theme for NodeGet.
+支持浅色 / 深色模式、手机布局、节点搜索、状态 / 区域 / 标签筛选、排序、卡片 / 列表 / 地图、节点详情、资源曲线与 ICMP / TCP 延迟历史。
 
-## 特性
+## 开发
 
-- **三视图 + 汇总头**：卡片 / 表格 / 世界地图，顶部全局汇总（节点数 / 在线 / 上下行带宽 / 累计流量）
-- **节点卡片**：CPU sparkline、内存/磁盘进度、网络吞吐、运行时长、价格、有效期
-- **节点详情**：CPU/内存/网络历史趋势图、环形指标、系统与网络信息
-- **语义状态色**：在线苔绿 / 告警芥黄 / 危急砖红，独立于品牌陶土强调色（磁盘 ≥70% 转告警、≥90% 转危急）
-- **自托管字体**：IBM Plex Sans / Mono + Newsreader，不依赖 CDN
-- **明暗双主题**：暗色为暖 espresso 底（非冷灰），默认跟随系统
-- 每 2 秒轮询实时指标，多后端聚合
-
-## 技术栈
-
-React 18 · Vite · Tailwind CSS · Recharts（趋势图）· ECharts（世界地图）· lucide
-
-## 本地开发
-
-```bash
-cp .env.example .env.local   # 填 backend_url(wss://) 与只读 token
-npm install
+```sh
+npm ci
+cp .env.example .env.local
+# 在 .env.local 中设置 NODEGET_CONFIG
 npm run dev
 ```
 
-## 部署
+生产版本固定使用 VECTOR；开发预览可对比两种布局。资源曲线展示本次会话的最近 60 个采样点。延迟历史支持 1 小时、6 小时、24 小时与 7 天窗口，沿用原有查询上限与刷新频率。
 
-### Cloudflare Pages（推荐）
+## 构建和部署
 
-1. 连接本仓库，Framework preset 选 **None**
-2. Build command：`npm run build`；Build output directory：`dist`
-3. 环境变量 **`NODEGET_CONFIG`**（单行 JSON）：
+```sh
+npm run typecheck
+npm run build
+```
 
-   ```json
-   {"user_preferences":{"site_name":"你的站名","site_logo":"","footer":"Powered by NodeGet"},"site_tokens":[{"name":"节点组","backend_url":"wss://你的后端","token":"只读TOKEN"}]}
-   ```
+Cloudflare Pages：构建命令 `npm run build`，输出目录 `dist`。使用 `NODEGET_CONFIG` 环境变量设置后端连接与站点名称：
 
-4. Node 版本由 `.nvmrc` 固定（22.12，Vite 8 要求）
+```json
+{"user_preferences":{"site_name":"我的节点","site_logo":"","footer":"Powered by NodeGet"},"site_tokens":[{"name":"主后端","backend_url":"wss://your-backend.example.com","token":"YOUR_READ_ONLY_TOKEN"}]}
+```
 
-也支持 Vercel、或 `npm run build` 后把 `dist/`（含自动打包的 zip）传到任意静态托管。
+静态状态页会公开连接配置，务必使用只读监控令牌。构建生成的 `dist/NodeGet-StatusShow.zip` 使用示例配置，不包含部署环境中的令牌；也可从 GitHub Releases 下载主题包。
 
-> ⚠️ **安全**：状态页是公开静态站，token 会打进构建产物、任何人可从源码读取。**务必使用只读 scoped token**（仅监控查询权限），切勿使用管理 / Super Token。
+## 相关主题
 
-## 配置
+- [VECTOR](https://github.com/Peters-Pans/NodeGet-Vector-Theme)
+- [ORBIT](https://github.com/Peters-Pans/NodeGet-Orbit-Theme)
 
-- `nodeget-theme.json`：主题元信息与用户可配项（站名 / 图标 / 页脚）
-- 运行时连接配置由构建生成的 `config.json` 或 `NODEGET_CONFIG` 环境变量提供
-- `public/custom.css`、`public/custom.js`：部署后可直接编辑，免重新构建即可注入自定义样式 / 脚本
+## 来源与许可
 
-## 致谢 / 来源
-
-本主题衍生自 [NodeGet-StatusShow](https://github.com/NodeSeekDev/NodeGet-StatusShow)（by NodeSeekDev），复用其 JSON-RPC / WebSocket 取数层与构建管线，重做了整个表现层。遵循上游 **AGPL-3.0** 许可，见 [LICENSE](./LICENSE)。
+数据协议、API 客户端、数据 hooks 和工具函数沿用 [NodeGet-StatusShow](https://github.com/NodeSeekDev/NodeGet-StatusShow) 与 [Almanac](https://github.com/Peters-Pans/NodeGet-Almanac-Theme) 的基础。页面视觉与展示组件重新实现。遵循 AGPL-3.0，见 [LICENSE](LICENSE)。

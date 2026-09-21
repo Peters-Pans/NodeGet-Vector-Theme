@@ -149,3 +149,9 @@ public/config.json
 .idea
 nodeget-theme.dev.json
 nodeget-theme.dev.jsonc
+# Separate theme editions
+dist-vector/
+dist-orbit/
+
+# Local shared dependency symlink
+/node_modules
