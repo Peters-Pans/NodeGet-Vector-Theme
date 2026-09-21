@@ -40,15 +40,15 @@ function preference(key: string, fallback: string) {
   }
 }
 function initialDesign(): Design {
-  if (import.meta.env.PROD) return document.documentElement.dataset.defaultDesign === "orbit" ? "orbit" : "vector";
-  const value =
-    new URLSearchParams(location.search).get("design") ||
-    preference(
-      "observatory.design",
-      document.documentElement.dataset.defaultDesign || "vector",
-    );
-  return value === "orbit" ? "orbit" : "vector";
+  const requested = new URLSearchParams(location.search).get("design");
+  if (requested === "vector" || requested === "orbit") return requested;
+  const saved = preference("observatory.design", "");
+  if (saved === "vector" || saved === "orbit") return saved;
+  return document.documentElement.dataset.defaultDesign === "orbit"
+    ? "orbit"
+    : "vector";
 }
+
 function Brand({ design, logo }: { design: Design; logo?: string }) {
   return (
     <a href="#" className="brand" aria-label="返回总览">
@@ -295,7 +295,7 @@ export function Observatory() {
             </div>
           )}
           <div className="topbar-actions">
-            {import.meta.env.DEV && <div className="design-switch" aria-label="主题方案">
+            <div className="design-switch" role="group" aria-label="主题方案">
               <button
                 aria-pressed={design === "vector"}
                 className={design === "vector" ? "active" : ""}
@@ -312,7 +312,7 @@ export function Observatory() {
                 <Orbit size={14} />
                 ORBIT
               </button>
-            </div>}
+            </div>
             <button
               className="icon-button appearance"
               onClick={() => setLight((v) => !v)}
